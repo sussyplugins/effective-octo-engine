@@ -1,0 +1,51 @@
+// Ensure this plugin is applied first
+apply plugin: 'java'
+
+// Use the modern extension syntax for Gradle 9+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+
+group 'com.example'
+version '1.0'
+
+def modName = 'examplemod'
+
+task assembleMod(type: Zip) {
+    // include metadata and any pre-existing .ams files
+    from('src/main/resources') {
+        include '**/*.amt'
+        include '**/*.ams'
+        include '**/*.png'
+        include '**/*.mp3'
+        include '**/*.mp4'
+        include '**/*.glb'
+        include '**/*.gflb'
+        into ''
+    }
+
+    // ensure compiled classes are present (not required by runtime, but helpful)
+    from('build/classes/java/main') {
+        into 'classes'
+    }
+
+    // include compiled jar as logic.ams so the loader has the mod binary
+    dependsOn build
+    doFirst {
+        def jarFile = file("build/libs/${modName}.jar")
+        if (jarFile.exists()) {
+            from(jarFile) {
+                into ''
+                rename { String fileName -> 'logic.ams' }
+            }
+        }
+    }
+
+    destinationDirectory = file("build/libs")
+    archiveFileName = "${modName}.zip"
+}
+
+assemble.dependsOn(assembleMod)

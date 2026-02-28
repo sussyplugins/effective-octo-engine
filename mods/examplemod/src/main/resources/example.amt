@@ -1,0 +1,7 @@
+# Example Astro Mod Title
+name=Example Mod
+version=1.0
+author=SussyDev
+modid=examplemod
+description=An example mod for AstroClient
+mainClass=com.example.ExampleMod
